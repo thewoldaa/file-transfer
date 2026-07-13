@@ -16,3 +16,6 @@ android-app/local.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Env files
+.env

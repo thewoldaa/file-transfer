@@ -1,9 +1,9 @@
 package com.filer.android
 
-import android.content.Context
 import android.net.Uri
 import okhttp3.*
-import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
 object FileTransferService {
@@ -27,20 +27,17 @@ object FileTransferService {
             inputStream.close()
 
             val requestBody = object : RequestBody() {
-                override fun contentType() = MediaType.parse("application/octet-stream")
+                override fun contentType() = "application/octet-stream".toMediaType()
                 override fun contentLength() = bytes.size.toLong()
                 override fun writeTo(sink: okio.BufferedSink) {
-                    val buffer = ByteArray(8192)
                     var written = 0
                     var offset = 0
                     while (offset < bytes.size) {
-                        val chunk = minOf(buffer.size, bytes.size - offset)
-                        System.arraycopy(bytes, offset, buffer, 0, chunk)
-                        sink.write(buffer, 0, chunk)
+                        val chunk = minOf(8192, bytes.size - offset)
+                        sink.write(bytes, offset, chunk)
                         offset += chunk
                         written += chunk
-                        val progress = (written * 100 / bytes.size)
-                        onProgress(progress)
+                        onProgress(written * 100 / bytes.size)
                     }
                 }
             }

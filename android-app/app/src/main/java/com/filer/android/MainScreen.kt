@@ -1,6 +1,5 @@
 package com.filer.android
 
-import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,18 +10,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(viewModel: MainViewModel, onPickFiles: () -> Unit) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val state by viewModel.state.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.initDiscovery(context)
@@ -58,7 +55,7 @@ fun MainScreen(viewModel: MainViewModel, onPickFiles: () -> Unit) {
                 Text("Uploads", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
                 Spacer(Modifier.height(8.dp))
                 LinearProgressIndicator(
-                    progress = { state.overallProgress / 100f },
+                    progress = state.overallProgress / 100f,
                     modifier = Modifier.fillMaxWidth().height(6.dp),
                     color = MaterialTheme.colorScheme.primary,
                 )
@@ -167,7 +164,7 @@ private fun FileCard(file: TransferFile) {
             if (file.status == "Uploading..." || file.progress > 0) {
                 Spacer(Modifier.height(6.dp))
                 LinearProgressIndicator(
-                    progress = { file.progress / 100f },
+                    progress = file.progress / 100f,
                     modifier = Modifier.fillMaxWidth().height(4.dp)
                 )
                 Text("${file.progress}%", fontSize = 11.sp, color = Color.Gray, modifier = Modifier.align(Alignment.End))
