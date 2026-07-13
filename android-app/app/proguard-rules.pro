@@ -1,0 +1,3 @@
+-keep class com.filer.android.** { *; }
+-dontwarn okhttp3.**
+-dontwarn okio.**
